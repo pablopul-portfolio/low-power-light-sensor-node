@@ -21,6 +21,7 @@
 #include "i2c.h"
 #include "usart.h"
 #include "gpio.h"
+#include <string.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -119,8 +120,9 @@ int main(void)
 	  }else{
 		  GPIOA ->BSRR = (1<<(1+16));
 	  }
-		  /*char msg[] = "Hola desde STM32\r\n";
-		  HAL_UART_Transmit(&huart2, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY); */
+
+	  char msg[] = "Hola desde STM32\r\n";
+	  HAL_UART_Transmit(&huart2, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
     /* USER CODE END WHILE */
 
