@@ -119,6 +119,9 @@ int main(void)
 	  }else{
 		  GPIOA ->BSRR = (1<<(1+16));
 	  }
+		  /*char msg[] = "Hola desde STM32\r\n";
+		  HAL_UART_Transmit(&huart2, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY); */
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
