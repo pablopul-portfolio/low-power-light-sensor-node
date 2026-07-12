@@ -1,0 +1,25 @@
+# Build output
+Debug/
+Release/
+build/
+
+# CubeIDE workspace metadata
+.metadata/
+.settings/
+*.launch
+
+# Object files and binaries
+*.o
+*.d
+*.elf
+*.bin
+*.hex
+*.map
+*.lst
+
+# CubeMX backup
+*.bak
+
+# OS files
+.DS_Store
+Thumbs.db
