@@ -68,9 +68,21 @@ void MX_GPIO_Init(void)
 
 
   /* USER CODE BEGIN 2 */
-  GPIOA -> MODER |= (1<<2);
-  GPIOA -> MODER &= ~(1<<3);
 
+  RCC->AHBENR |= (1 << 0);  // Enable GPIOA clock
+
+  	  /*#### PA1 as an output for LED ####*/
+  GPIOA -> MODER |= (1 << (1 * 2));
+  GPIOA -> MODER &= ~(1 << ((1 * 2) + 1));
+
+  /* PB6 and PB7 are for I2C */
+
+  	  /*#### PA2 as AF for UART2 ####*/
+  GPIOA -> MODER &= ~(1 << (2 * 2));
+  GPIOA -> MODER |= (1 << ((2 * 2) + 1));
+
+  GPIOA->AFR[0] &= ~(0xF << 8);   // Erases bits of PA2
+  GPIOA->AFR[0] |=  (0x7 << 8);  // AF7
 
   /* USER CODE END 2 */
 

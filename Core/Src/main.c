@@ -19,7 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "i2c.h"
-#include "usart.h"
+#include "my_uart.h"   // personalized uart file
 #include "gpio.h"
 #include <string.h>
 
@@ -89,9 +89,11 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_USART2_UART_Init();
+  //MX_USART2_UART_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
+
+  MY_UART_Init();
   // Direction of I2C for sensor BH1750 (0x23 displaced one bit to the left)
   #define BH1750_ADDR   (0x23 << 1)
 
@@ -105,24 +107,31 @@ int main(void)
   HAL_I2C_Master_Transmit(&hi2c1, BH1750_ADDR, &L_res_mode, 1, HAL_MAX_DELAY);
   HAL_Delay(30);
 
+  MY_UART_SendString("Low-power sensor system initialized\n");
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  MY_UART_SendChar('A');
+  MY_UART_SendChar('\n');
   while (1)
   {
+
+
 	  if(HAL_I2C_Master_Receive(&hi2c1, BH1750_ADDR, sensor_values, 2, HAL_MAX_DELAY)==HAL_OK){
 		  uint16_t raw_lux = (sensor_values[0] << 8) | sensor_values[1];
 		  value_lx = raw_lux / 1.2f;
 	  }
-	  if(value_lx >= (200)){
+	  if(value_lx <= (100)){
 		  GPIOA ->BSRR = (1<<1);
+
 	  }else{
 		  GPIOA ->BSRR = (1<<(1+16));
 	  }
 
-	  char msg[] = "Hola desde STM32\r\n";
-	  HAL_UART_Transmit(&huart2, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+	  //char msg[] = "Hola desde STM32\r\n";
+	  //HAL_UART_Transmit(&huart2, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
     /* USER CODE END WHILE */
 
