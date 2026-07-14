@@ -81,6 +81,9 @@ void MX_GPIO_Init(void)
   GPIOA -> MODER &= ~(1 << (2 * 2));
   GPIOA -> MODER |= (1 << ((2 * 2) + 1));
 
+  GPIOA -> MODER &= ~(1 << (3 * 2));
+  GPIOA -> MODER |= (1 << ((3 * 2) + 1));
+
   GPIOA->AFR[0] &= ~(0xF << 8);   // Erases bits of PA2
   GPIOA->AFR[0] |=  (0x7 << 8);  // AF7
 
