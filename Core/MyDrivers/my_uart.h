@@ -5,7 +5,8 @@
  *      Author: PABLO
  */
 
-#include "main.h"
+#include <string.h>
+#include <stdio.h>
 
 
 void MY_UART_Init(void);
@@ -13,5 +14,7 @@ void MY_UART_Init(void);
 void MY_UART_SendChar(char c);
 
 void MY_UART_SendString(const char *str);
+
+void MY_UART_SendLux(float lux_value);
 
 

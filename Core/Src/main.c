@@ -19,8 +19,11 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "i2c.h"
-#include "my_uart.h"   // personalized uart file
 #include "gpio.h"
+
+#include "my_uart.h"   // personalized uart file
+#include "bh1750.h"
+
 #include <string.h>
 #include <stdio.h>
 
@@ -92,26 +95,18 @@ int main(void)
   MX_GPIO_Init();
   //MX_USART2_UART_Init();
   MX_I2C1_Init();
+
   /* USER CODE BEGIN 2 */
 
   MY_UART_Init();
-  // Direction of I2C for sensor BH1750 (0x23 displaced one bit to the left)
-  #define BH1750_ADDR   (0x23 << 1)
+  BH1750_Init();
 
-  // Comando para activar el Modo Continuo de Baja Resolución (0001_0011)
-  uint8_t L_res_mode = 0x13;
-  // Array de 2 bytes necesario para almacenar el High Byte y el Low Byte del sensor
-  uint8_t sensor_values[2];
-  // Variable float para almacenar el resultado final con decimales
+  #define LIGHT_THRESHOLD_LUX 80.0f
+
   float value_lx = 0.0f;
-  char tx_buffer[30];
-
-  HAL_I2C_Master_Transmit(&hi2c1, BH1750_ADDR, &L_res_mode, 1, HAL_MAX_DELAY);
-  HAL_Delay(30);
-
-  //MY_UART_SendString("Sensor system initialized\n");
 
   /* USER CODE END 2 */
+
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -119,37 +114,11 @@ int main(void)
   while (1)
   {
 
-	 /* for (uint8_t addr = 1; addr < 128; addr++) {
-	      if (HAL_I2C_IsDeviceReady(&hi2c1, addr << 1, 1, 10) == HAL_OK) {
-	          char msg[32];
-	          sprintf(msg, "Device found: 0x%02X\n", addr);
-	          MY_UART_SendString(msg);
-	      }
-	  }
+	  value_lx = BH1750_ReadLux();
 
-	  HAL_StatusTypeDef status = HAL_I2C_Master_Transmit(&hi2c1, BH1750_ADDR, &L_res_mode, 1, 100);
-	  if (status != HAL_OK) {
-	      MY_UART_SendString("I2C init failed\n");
-	  }*/
+	  MY_UART_SendLux(value_lx);
 
-	  if(HAL_I2C_Master_Receive(&hi2c1, BH1750_ADDR, sensor_values, 2, 100)==HAL_OK){
-
-		  uint16_t raw_lux = (sensor_values[0] << 8) | sensor_values[1];
-		  value_lx = raw_lux / 1.2f;
-
-		  int whole_part = (int)value_lx;
-		  int decimal_part = (int)((value_lx - whole_part) * 100);
-		  if (decimal_part < 0) {
-		      decimal_part = -decimal_part;
-		  }
-		  snprintf(tx_buffer, sizeof(tx_buffer), "Lux: %d.%02d\r\n", whole_part, decimal_part);
-		  MY_UART_SendString(tx_buffer);
-
-
-	  }else{ HAL_I2C_Master_Transmit(&hi2c1, BH1750_ADDR, &L_res_mode, 1, 100); }
-
-
-	  if(value_lx <= (100)){
+	  if(value_lx <= LIGHT_THRESHOLD_LUX){
 		  GPIOA ->BSRR = (1<<1);
 	  }else{
 		  GPIOA ->BSRR = (1<<(1+16));
@@ -157,6 +126,7 @@ int main(void)
 
 
     /* USER CODE END WHILE */
+
 
     /* USER CODE BEGIN 3 */
   }
