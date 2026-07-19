@@ -21,8 +21,9 @@
 #include "i2c.h"
 #include "gpio.h"
 
-#include "my_uart.h"   // personalized uart file
+#include "my_uart.h"
 #include "bh1750.h"
+#include "rtc.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -100,6 +101,7 @@ int main(void)
 
   MY_UART_Init();
   BH1750_Init();
+  RTC_Init();
 
   #define LIGHT_THRESHOLD_LUX 80.0f
 
