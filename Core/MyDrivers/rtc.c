@@ -79,10 +79,6 @@ void RTC_WKUP_IRQHandler(void){
 		RTC->WPR = 0xCA;
 		RTC->WPR = 0x53;
 
-		//GPIOA ->BSRR = (1<<1);
-
-		//GPIOA->ODR ^= (1 << 1);
-
 		RTC->ISR &= ~RTC_ISR_WUTF;  // Clear flag
 
 		EXTI->PR = EXTI_PR_PR20;  // Clear exti
