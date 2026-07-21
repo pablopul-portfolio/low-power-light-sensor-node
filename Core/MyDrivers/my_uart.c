@@ -35,6 +35,7 @@ void MY_UART_SendString(const char *str){
 		MY_UART_SendChar(*str);
 		str++;
 	}
+	while (!(USART2->SR & USART_SR_TC));  // Wait for complete transmission
 }
 
 void MY_UART_SendLux(float lux_value){
