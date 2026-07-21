@@ -36,10 +36,11 @@ void RTC_Init(void){
 
 	RTC->ISR &= ~RTC_ISR_INIT;
 
+	EXTI->PR |= (1 << 20);  // Clear flag
 	EXTI->IMR |= (1 << 20);
 	EXTI->RTSR |= (1 << 20);  // Exti in rising edge
 
-
+	RTC->ISR &= ~RTC_ISR_WUTF;  // Wakeup timer flag cleared
 	RTC->CR |= RTC_CR_WUTIE;  // WUTIE = 1, Wakeup timer interrupt
 
 	NVIC->ISER[0] |= (1 << 3);  // Enable RTC_WKUP IRQ
@@ -64,6 +65,8 @@ void RTC_SetWakeup(uint32_t seconds){
 	}
 	RTC->WUTR = (seconds - 1);  // Counts backwards from seconds - 1
 
+	RTC->ISR &= ~RTC_ISR_WUTF;  // Clear previous flag
+
 	RTC->CR |= RTC_CR_WUTE;
 
 	RTC->WPR = 0xFF;
@@ -72,11 +75,19 @@ void RTC_SetWakeup(uint32_t seconds){
 void RTC_WKUP_IRQHandler(void){
 
 	if (RTC->ISR & RTC_ISR_WUTF){
-		GPIOA ->BSRR = (1<<1);
+
+		RTC->WPR = 0xCA;
+		RTC->WPR = 0x53;
+
+		//GPIOA ->BSRR = (1<<1);
+
+		//GPIOA->ODR ^= (1 << 1);
 
 		RTC->ISR &= ~RTC_ISR_WUTF;  // Clear flag
 
 		EXTI->PR = EXTI_PR_PR20;  // Clear exti
+
+		RTC->WPR = 0xFF;
 	}
 }
 
