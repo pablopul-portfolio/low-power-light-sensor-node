@@ -7,9 +7,9 @@
 
 #include "stm32l1xx.h"
 #include "lowpower.h"
-#include "main.h"
 
 extern void SystemClock_Config(void);
+
 
 void LOWPOWER_EnterStopMode(void){
 
@@ -17,7 +17,7 @@ void LOWPOWER_EnterStopMode(void){
 
 	PWR->CR |= PWR_CR_DBP;  // Backup domain
 
-	DBGMCU->CR |= DBGMCU_CR_DBG_STOP;    // This was added due to issues connecting to debugger
+	//DBGMCU->CR |= DBGMCU_CR_DBG_STOP;    // This was added due to issues connecting to debugger
 
 	PWR->CR |= PWR_CR_LPSDSR;
 	PWR->CR &= ~PWR_CR_PDDS;
@@ -32,8 +32,6 @@ void LOWPOWER_EnterStopMode(void){
 	__WFI();
 
 	HAL_ResumeTick();
-
-	//GPIOA->ODR ^= (1 << 1);
 
 	SystemClock_Config();
 
