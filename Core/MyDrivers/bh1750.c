@@ -7,7 +7,11 @@
 #include "bh1750.h"
 #include "i2c.h"
 
+#include <math.h>
+
+
 #define BH1750_ADDR (0x23 << 1)  // Direction of I2C for sensor BH1750 (0x23 displaced one bit to the left)
+#define MAX_THRESHOLD 30.0f
 
 
 uint8_t L_res_mode = 0x13;  // Low resolution continuous mode
@@ -36,7 +40,18 @@ float BH1750_ReadLux(void){
 	uint16_t raw_data = BH1750_ReadData();
 
 	return raw_data/1.2f;
+}
 
+uint32_t BHT1750_AdaptiveSampling(float value, float prev){
+
+	float difference = fabs(value - prev);
+	float rel_threshold = fabs(value - prev)/prev;  // Change of at least 15% compared to previous
+
+	if(difference >= MAX_THRESHOLD && rel_threshold >= 0.15){
+		return 5;
+	}
+
+	return 30;
 }
 
 

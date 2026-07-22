@@ -18,9 +18,7 @@ uint16_t BH1750_ReadData(void);  // Obtains output from sensor
 
 float BH1750_ReadLux(void);  // Obtains Lux from sensor
 
-
-
-
+uint32_t BHT1750_AdaptiveSampling(float value, float prev);  // Implements the logic for deciding the ammount of time the microcontroller sleeps
 
 
 
