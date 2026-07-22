@@ -21,15 +21,17 @@
 #include "i2c.h"
 #include "gpio.h"
 
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+
 #include "my_uart.h"
 #include "bh1750.h"
+#include "lowpower.h"
 #include "rtc.h"
 
 #include <string.h>
 #include <stdio.h>
-
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
 
@@ -51,7 +53,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+#define LIGHT_THRESHOLD_LUX 80.0f
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -103,9 +105,11 @@ int main(void)
   BH1750_Init();
   RTC_Init();
 
-  #define LIGHT_THRESHOLD_LUX 80.0f
 
   float value_lx = 0.0f;
+  float prev_lx = 0.0f;
+
+  uint32_t wakeup_time = 0;
 
   /* USER CODE END 2 */
 
@@ -115,16 +119,26 @@ int main(void)
 
   while (1)
   {
+	  prev_lx = value_lx;
 
 	  value_lx = BH1750_ReadLux();
 
 	  MY_UART_SendLux(value_lx);
+
 
 	  if(value_lx <= LIGHT_THRESHOLD_LUX){
 		  GPIOA ->BSRR = (1<<1);
 	  }else{
 		  GPIOA ->BSRR = (1<<(1+16));
 	  }
+
+
+	  wakeup_time = BHT1750_AdaptiveSampling(value_lx, prev_lx);
+
+	  RTC_SetWakeup(wakeup_time);
+
+
+	  LOWPOWER_EnterStopMode();
 
 
     /* USER CODE END WHILE */
