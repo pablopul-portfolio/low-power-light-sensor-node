@@ -61,6 +61,22 @@ This improves responsiveness while reducing average power consumption.
 
 Also, the BH1750 sensor is configured in the Low Resolution mode as the measurement time in this mode is of 16ms, reducing significantly the time spent measuring and consuming power.
 
+### Measures
+
+| Operating Mode | LED | Measured Current (mA) |
+|----------------|-----|-----------------------|
+| Continuous Mode | OFF | 8.7 mA |
+| Stop Mode (30 s Wake-up) | OFF | 0.4 mA |
+| Continuous Mode | ON | 13.8 mA |
+| Stop Mode (30 s Wake-up) | ON | 6.0 mA |
+
+
+With the external LED disabled, entering Stop Mode reduced the measured current by **95.3%** (8.70 mA → 0.41 mA).
+
+With the external LED enabled, the measured current was reduced by **56.5%** (13.80 mA → 6.00 mA). This lower reduction is expected as the LED current remains independent of the MCU operating mode and therefore dominates the total current consumption while the microcontroller is in Stop Mode.
+
+**Note:** Measurements were performed using the NUCLEO-L152RE development board with a digital multimeter connected across the JP6 (IDD) jumper. The values include the development board circuitry and are intended for comparative evaluation of the firmware power-saving strategy. However, this data does not include the period when the BH1750 sensor is measuring and transmitting, as they represent very short period of time (~16ms).
+
 ## Drivers
 
 | Driver | Description |
@@ -110,7 +126,6 @@ To view the data from the bare-metal UART:
 * Interrupt based UART
 * Upgraded Adaptive Sampling algorithm
 * UART command-line interface (CLI)
-* Power consumption measurements
 * Implementation of a Finite State Machine
 * Battery-powered operation
 * PCB implementation
